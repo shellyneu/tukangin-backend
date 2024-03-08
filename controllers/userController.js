@@ -1,7 +1,9 @@
 const User = require("../models/userModel");
+const models = require("../models");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
+const { where } = require("sequelize");
 
 const registerUser = asyncHandler(async (req, res) => {
   const {
@@ -16,53 +18,71 @@ const registerUser = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (!noHP) {
-    res.status(400);
-    throw new Error("NoHP tidak boleh kosong");
+    res.status(400).json({
+      success: false,
+      message: "NoHP tidak boleh kosong",
+    });
+    return;
   } else if (!/^\d+$/.test(noHP)) {
-    res.status(400);
-    throw new Error("Nomor HP hanya boleh di isi dengan angka");
-  } else if (noHP.length < 9) {
-    res.status(400);
-    throw new Error("Silahkan isi nomor HP dengan benar minimal 9");
-  } else if (noHP.length > 13) {
-    res.status(400);
-    throw new Error("Silahkan isi nomor HP dengan benar maksimal 13 angka");
+    res.status(400).json({
+      success: false,
+      message: "Nomor HP hanya boleh di isi dengan angka",
+    });
+    return;
+  } else if (noHP.length < 9 || noHP.length > 13) {
+    res.status(400).json({
+      success: false,
+      message:
+        "Silahkan isi nomor HP dengan benar, minimal 9 dan maksimal 13 angka",
+    });
+    return;
   }
 
-  const userExists = await User.findOne({ email });
-
+  const userExists = await models.User.findOne({ where: { email } });
   if (userExists) {
-    res.status(400);
-    throw new Error("User akun sudah terserdia");
+    res.status(400).json({
+      success: false,
+      message: "User akun sudah tersedia",
+    });
+    return;
   }
 
   if (!nama) {
-    res.status(400);
-    throw new Error("Nama tidak boleh kosong");
+    res.status(400).json({
+      success: false,
+      message: "Nama tidak boleh kosong",
+    });
+    return;
   }
 
-  if (!email) {
-    res.status(400);
-    throw new Error("Email tidak boleh kosong");
-  } else if (!/\S+@\S+\.\S+/.test(email)) {
-    res.status(400);
-    throw new Error("Email harus valid");
+  if (!email || !/\S+@\S+\.\S+/.test(email)) {
+    res.status(400).json({
+      success: false,
+      message: "Email harus valid",
+    });
+    return;
   }
 
   if (!password) {
-    res.status(400);
-    throw new Error("Password tidak boleh kosong");
+    res.status(400).json({
+      success: false,
+      message: "Password tidak boleh kosong",
+    });
+    return;
   }
 
   if (password !== confirmPassword) {
-    res.status(400);
-    throw new Error("Password tidak sesuai");
+    res.status(400).json({
+      success: false,
+      message: "Password tidak sesuai",
+    });
+    return;
   }
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  const user = await User.create({
+  const user = await models.User.create({
     nama,
     nik,
     noHP,
@@ -86,15 +106,17 @@ const registerUser = asyncHandler(async (req, res) => {
       status: 201,
     });
   } else {
-    res.status(500);
-    throw new Error("Internal server error");
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 });
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await models.User.findOne({ where: { email } });
 
   if (!user) {
     res.status(400);
@@ -105,8 +127,8 @@ const loginUser = asyncHandler(async (req, res) => {
     return res.status(200).json({
       success: true,
       data: {
-        accessToken: generateAccessToken(user._id),
-        refreshToken: generateRefreshToken(user._id),
+        accessToken: generateAccessToken(user.id),
+        refreshToken: generateRefreshToken(user.id),
       },
       message: "Login berhasil",
       status: 200,

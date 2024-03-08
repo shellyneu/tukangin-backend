@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
 const UserModel = (sequelize, DataTypes) => {
-  const User = sequelize.define("User", {
+  const User = sequelize.define("user", {
     nama: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -19,7 +19,6 @@ const UserModel = (sequelize, DataTypes) => {
     noHP: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
       validate: {
         is: /^\d{9,13}$/,
       },
