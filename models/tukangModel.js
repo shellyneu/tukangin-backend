@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
-const UserModel = (sequelize, DataTypes) => {
-  const User = sequelize.define("user", {
+const TukangModel = (sequelize, DataTypes) => {
+  const Tukang = sequelize.define("tukang", {
     nama: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -10,7 +10,7 @@ const UserModel = (sequelize, DataTypes) => {
     },
     deskripsi: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     noHP: {
       type: DataTypes.STRING,
@@ -33,7 +33,7 @@ const UserModel = (sequelize, DataTypes) => {
     },
     ktp: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     statusValidate: {
       type: DataTypes.BOOLEAN,
@@ -42,7 +42,7 @@ const UserModel = (sequelize, DataTypes) => {
     },
   });
 
-  return User;
+  return Tukang;
 };
 
-module.exports = UserModel;
+module.exports = TukangModel;

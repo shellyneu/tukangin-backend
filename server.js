@@ -12,6 +12,8 @@ db.sequelize.sync().then(() => {
 });
 
 app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/tukang", require("./routes/tukangRoutes"));
+app.use(express.static("storage"));
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);

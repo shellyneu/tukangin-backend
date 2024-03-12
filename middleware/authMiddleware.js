@@ -14,7 +14,7 @@ const authentication = asyncHandler(async (req, res, next) => {
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      req.user = await User.findById(decoded.id).select("-password");
+      req.user = await User.findOne({ where: { id: decoded.id } });
 
       next();
     } catch (error) {
@@ -28,6 +28,8 @@ const authentication = asyncHandler(async (req, res, next) => {
     res.status(401);
     throw new Error("Not authorized, no token");
   }
+
+  return;
 });
 
 module.exports = { authentication };

@@ -6,16 +6,8 @@ const asyncHandler = require("express-async-handler");
 const { where } = require("sequelize");
 
 const registerUser = asyncHandler(async (req, res) => {
-  const {
-    nama,
-    nik,
-    noHP,
-    email,
-    password,
-    confirmPassword,
-    ktp,
-    statusValidate,
-  } = req.body;
+  const { nama, noHP, email, password, confirmPassword, ktp, statusValidate } =
+    req.body;
 
   if (!noHP) {
     res.status(400).json({
@@ -84,7 +76,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const user = await models.User.create({
     nama,
-    nik,
     noHP,
     email,
     password: hashedPassword,
@@ -145,7 +136,6 @@ const getUser = asyncHandler(async (req, res) => {
     data: {
       _id: req.user.id,
       nama: req.user.nama,
-      nik: req.user.nik,
       noHP: req.user.noHP,
       email: req.user.email,
       ktp: req.user.ktp,
@@ -161,50 +151,43 @@ const validateAccount = async (req, res) => {
 
   try {
     const userId = req.user.id;
-    const { nik } = req.body;
+    const { deskripsi } = req.body;
     const ktpFileName = req.file ? req.file.filename : null;
 
-    if (!nik || !ktpFileName) {
+    if (!deskripsi && !ktpFileName) {
       return res.status(400).json({
         success: false,
-        message: "Mohon masukkan nik dan unggah foto KTP",
+        message: "Mohon masukkan deskripsi dan/atau unggah foto KTP",
       });
     }
 
-    const existingUser = await User.findOne({ nik });
-
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "NIK sudah terdaftar",
-      });
+    const updateObject = {};
+    if (deskripsi) {
+      updateObject.deskripsi = deskripsi;
+    }
+    if (ktpFileName) {
+      updateObject.ktp = `${process.env.BASE_URL}/ktp/${ktpFileName}`;
+      updateObject.statusValidate = true;
     }
 
-    updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        nik,
-        ktp: `${process.env.BASE_URL}/ktp/${ktpFileName}`,
-        statusValidate: true,
-      },
-      { new: true }
-    );
+    updatedUser = await User.update(updateObject, { where: { id: userId } });
 
-    if (!updatedUser) {
+    if (updatedUser[0] === 0) {
       return res.status(404).json({
         success: false,
         message: "Pengguna tidak ditemukan",
       });
     }
+    updatedUser = await User.findByPk(userId);
 
     res.status(200).json({
       success: true,
       data: {
         _id: updatedUser.id,
         nama: updatedUser.nama,
-        nik: updatedUser.nik,
         noHP: updatedUser.noHP,
         email: updatedUser.email,
+        deskripsi: updatedUser.deskripsi,
         fotoKtp: updatedUser.ktp,
         statusValidate: updatedUser.statusValidate,
       },
