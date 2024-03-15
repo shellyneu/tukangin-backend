@@ -36,26 +36,33 @@ const createPostJob = asyncHandler(async (req, res) => {
     });
   }
 
-  const postJob = await models.PostJob.create({
-    titleJob,
-    serviceCategory,
-    address,
-    link,
-    price,
-    day,
-    listJob,
-    desc,
-    statusJob,
-    tukang,
-    applyTukang,
-    photo: `${process.env.BASE_URL}/postJob/${PhotoName}`,
-  });
+  try {
+    const userId = req.user.id;
+    const postJob = await models.PostJob.create({
+      userId: userId,
+      titleJob,
+      serviceCategory,
+      address,
+      link,
+      price,
+      day,
+      listJob,
+      desc,
+      statusJob,
+      tukang,
+      applyTukang,
+      photo: `${process.env.BASE_URL}/postJob/${PhotoName}`,
+    });
 
-  res.status(201).json({
-    success: true,
-    data: postJob,
-    message: "Post job created successfully",
-  });
+    res.status(201).json({
+      success: true,
+      data: postJob,
+      message: "Post job created successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
 });
 
 // Get all post jobs

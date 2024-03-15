@@ -2,7 +2,17 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
 const PostJobModel = (sequelize, DataTypes) => {
+  const User = require("./userModel")(sequelize, DataTypes);
+
   const PostJob = sequelize.define("postJob", {
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: "id",
+      },
+    },
     titleJob: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -53,6 +63,8 @@ const PostJobModel = (sequelize, DataTypes) => {
       allowNull: true,
     },
   });
+
+  PostJob.belongsTo(User, { foreignKey: "userId" });
 
   return PostJob;
 };
