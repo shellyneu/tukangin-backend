@@ -1,14 +1,40 @@
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
-const User = require("../models/userModel");
+const User = require("../models").User;
 
 const authentication = asyncHandler(async (req, res, next) => {
-  let token = req.headers["authorization"];
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    try {
+      token = req.headers.authorization.split(" ")[1];
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      const user = await User.findByPk(decoded.id);
+
+      if (user) {
+        req.user = user;
+        next();
+      } else {
+        throw new Error("Pengguna tidak ditemukan");
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(401).json({
+        success: false,
+        message: "Not authorized - Token expired or invalid",
+      });
+    }
+  }
 
   if (!token) {
-    return res
+    res
       .status(401)
-      .json({ message: "Access denied. No token provided." });
+      .json({ success: false, message: "Not authorized, no token" });
   }
 
   const verified = jwt.verify(
