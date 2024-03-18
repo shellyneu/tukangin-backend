@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
-const User = require("../models/userModel");
+const User = require("../models").User;
 
 const authentication = asyncHandler(async (req, res, next) => {
   let token;
@@ -14,22 +14,28 @@ const authentication = asyncHandler(async (req, res, next) => {
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      req.user = await User.findOne({ where: { id: decoded.id } });
+      const user = await User.findByPk(decoded.id);
 
-      next();
+      if (user) {
+        req.user = user;
+        next();
+      } else {
+        throw new Error("Pengguna tidak ditemukan");
+      }
     } catch (error) {
-      console.log(error);
-      res.status(401);
-      throw new Error("Not authorized - Token expired or invalid");
+      console.error(error);
+      res.status(401).json({
+        success: false,
+        message: "Not authorized - Token expired or invalid",
+      });
     }
   }
 
   if (!token) {
-    res.status(401);
-    throw new Error("Not authorized, no token");
+    res
+      .status(401)
+      .json({ success: false, message: "Not authorized, no token" });
   }
-
-  return;
 });
 
 module.exports = { authentication };

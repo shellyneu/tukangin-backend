@@ -80,7 +80,7 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password: hashedPassword,
     ktp,
-    statusValidate,
+    statusValidate: false,
   });
 
   if (user) {

@@ -1,45 +1,43 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
+const UserModel = require("./userModel");
 
 const TukangModel = (sequelize, DataTypes) => {
+  const User = UserModel(sequelize, DataTypes);
   const Tukang = sequelize.define("tukang", {
-    nama: {
-      type: DataTypes.STRING,
+    userId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
+      references: {
+        model: User,
+        key: "id",
+      },
     },
     deskripsi: {
       type: DataTypes.STRING,
-      allowNull: false,
-    },
-    noHP: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        is: /^\d{9,13}$/,
-      },
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true,
-      },
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     ktp: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     statusValidate: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
+      allowNull: true,
+      defaultValue: true,
     },
+  });
+
+  Tukang.belongsTo(User, { foreignKey: "userId" });
+
+  Tukang.beforeCreate(async (tukangInstance, options) => {
+    const user = await User.findByPk(tukangInstance.userId);
+    if (user) {
+      tukangInstance.nama = user.nama;
+      tukangInstance.noHP = user.noHP;
+      tukangInstance.email = user.email;
+      tukangInstance.password = user.password;
+    }
   });
 
   return Tukang;
