@@ -7,6 +7,8 @@ const storage = (tipeUpload) =>
       let uploadPath;
       if (tipeUpload === "ktp") {
         uploadPath = path.join(__dirname, "../storage/ktp");
+      } else if (tipeUpload === "photo") {
+        uploadPath = path.join(__dirname, "../storage/postJob");
       } else {
         return cb("Error: Tipe upload tidak valid!");
       }

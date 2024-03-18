@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { authentication } = require("../middleware/authMiddleware");
+const uploadPhoto = require("../middleware/imageMiddleware");
 const {
   createPostJob,
   getPostJobs,
@@ -11,11 +12,16 @@ const {
 } = require("../controllers/postJobController");
 
 // Routes
-router.post("/", createPostJob);
-router.get("/", getPostJobs);
-router.get("/:id", getPostJobById);
-router.put("/:id", updatePostJob);
-router.delete("/:id", deletePostJob);
-router.get("/category/:category", getPostJobsByCategory);
+router.post(
+  "/",
+  authentication,
+  uploadPhoto("photo").single("photo"),
+  createPostJob
+);
+router.get("/", authentication, getPostJobs);
+router.get("/:id", authentication, getPostJobById);
+router.put("/:id", authentication, updatePostJob);
+router.delete("/:id", authentication, deletePostJob);
+router.get("/category/:category", authentication, getPostJobsByCategory);
 
 module.exports = router;

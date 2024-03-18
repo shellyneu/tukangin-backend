@@ -36,25 +36,6 @@ const authentication = asyncHandler(async (req, res, next) => {
       .status(401)
       .json({ success: false, message: "Not authorized, no token" });
   }
-
-  const verified = jwt.verify(
-    token,
-    process.env.JWT_SECRET,
-    async (err, decoded) => {
-      if (err) {
-        return res.status(401).json({ message: "Unauthorized!" });
-      }
-
-      const user = await User.findById(decoded.id).select("-password");
-
-      if (!user) {
-        return res.status(401).json({ message: "Unauthorized!" });
-      }
-
-      req.user = user;
-      next();
-    }
-  );
 });
 
 module.exports = { authentication };
