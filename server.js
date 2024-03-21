@@ -17,6 +17,7 @@ app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/tukang", require("./routes/tukangRoutes"));
 app.use("/api/postJobs", require("./routes/postJobRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
+app.use("/api/transactions", require("./routes/transactionRoutes"));
 
 app.use(express.static("storage"));
 
