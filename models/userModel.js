@@ -8,13 +8,9 @@ const UserModel = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
     },
-    nik: {
+    deskripsi: {
       type: DataTypes.STRING,
       allowNull: true,
-      unique: true,
-      validate: {
-        len: [16],
-      },
     },
     noHP: {
       type: DataTypes.STRING,
