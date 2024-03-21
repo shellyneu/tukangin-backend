@@ -9,6 +9,8 @@ const storage = (tipeUpload) =>
         uploadPath = path.join(__dirname, "../storage/ktp");
       } else if (tipeUpload === "photo") {
         uploadPath = path.join(__dirname, "../storage/postJob");
+      } else if (tipeUpload === "bukti") {
+        uploadPath = path.join(__dirname, "../storage/bukti");
       } else {
         return cb("Error: Tipe upload tidak valid!");
       }
