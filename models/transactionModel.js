@@ -1,10 +1,49 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
+const UserModel = require("./userModel");
+const TukangModel = require("./tukangModel");
+const PostJobModel = require("./postJobModel");
 
 const TransactionModel = (sequelize, DataTypes) => {
+  const User = UserModel(sequelize, DataTypes);
+  const Tukang = TukangModel(sequelize, DataTypes);
+  const PostJob = PostJobModel(sequelize, DataTypes);
+
   const Transaction = sequelize.define("transaction", {
-    tukang: {
-      type: DataTypes.STRING,
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: "id",
+      },
+    },
+    tukangId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Tukang,
+        key: "id",
+      },
+    },
+    jobId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: PostJob,
+        key: "id",
+      },
+    },
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    price_admin: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    price_total: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     date: {
@@ -17,13 +56,24 @@ const TransactionModel = (sequelize, DataTypes) => {
     },
     status: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       defaultValue: "Pengajuan",
     },
     action: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
     },
+  });
+
+  Transaction.belongsTo(User, { foreignKey: "userId" });
+  Transaction.belongsTo(Tukang, { foreignKey: "tukangId" });
+  Transaction.belongsTo(PostJob, { foreignKey: "jobId" });
+
+  Transaction.beforeCreate(async (transactionInstance, options) => {
+    const job = await PostJob.findByPk(transactionInstance.jobId);
+    if (job) {
+      transactionInstance.price = job.price;
+    }
   });
 
   return Transaction;

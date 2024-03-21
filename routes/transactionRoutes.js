@@ -7,7 +7,7 @@ const {
 } = require("../controllers/transactionController");
 
 // Routes
-router.post("/", createTransaction);
-router.get("/", getTransactions);
+router.post("/:tukangId/:jobId", authentication, createTransaction);
+router.get("/", authentication, getTransactions);
 
 module.exports = router;

@@ -1,28 +1,36 @@
 const models = require("../models");
 const asyncHandler = require("express-async-handler");
 
-const validStatus = ["Pengajuan", "Pengerjaan", "Selesai"];
-
 // Create a new transaction
 const createTransaction = asyncHandler(async (req, res) => {
-  const { tukang, bukti, status, action } = req.body;
   const BuktiName = req.file ? req.file.filename : null;
-
-  if (!validStatus.includes(status)) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid status",
-    });
-  }
 
   const date = new Date();
 
+  const userId = req.user.id;
+  const tukangId = req.params.tukangId;
+  const jobId = req.params.jobId;
+  if (!tukangId || !jobId) {
+    return res.status(400).json({
+      success: false,
+      message: "Tukang ID and Job ID are required",
+    });
+  }
+
+  const postJob = await models.PostJob.findByPk(jobId);
+  const price = postJob.price;
+  const price_admin = 2500;
+  const price_total = price + price_admin;
+
   const transaction = await models.Transaction.create({
-    tukang,
+    userId: userId,
+    tukangId: tukangId,
+    jobId: jobId,
     date,
+    price,
+    price_admin: price_admin,
+    price_total: price_total,
     bukti: `${process.env.BASE_URL}/bukti/${BuktiName}`,
-    status,
-    action,
   });
 
   res.status(201).json({
