@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const { authentication } = require("../middleware/authMiddleware");
 const {
-  addReview,
+  createReview,
   getAllReviews,
   getReviewById,
 } = require("../controllers/reviewController");
 
-router.post("/add", addReview);
+router.post("/:jobId", authentication, createReview);
 router.get("/", getAllReviews);
 router.get("/:id", getReviewById);
 

@@ -1,15 +1,16 @@
-const Review = require("../models/reviewModel");
 const models = require("../models");
 
-const addReview = async (req, res) => {
+const createReview = async (req, res) => {
   try {
-    const { rating, comment, userId, workerId } = req.body;
+    const { rating, comment } = req.body;
+    const userId = req.user.id;
+    const jobId = req.params.jobId;
 
     const review = await models.Review.create({
+      userId: userId,
+      jobId: jobId,
       rating,
       comment,
-      userId,
-      workerId,
     });
 
     res.status(201).json({
@@ -72,4 +73,4 @@ const getReviewById = async (req, res) => {
   }
 };
 
-module.exports = { getAllReviews, getReviewById, addReview };
+module.exports = { getAllReviews, getReviewById, createReview };
