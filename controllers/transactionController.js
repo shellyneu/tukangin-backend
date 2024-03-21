@@ -10,7 +10,7 @@ const createTransaction = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const tukangId = req.params.tukangId;
   const jobId = req.params.jobId;
-  if (!tukangId || !jobId) {
+  if (!jobId) {
     return res.status(400).json({
       success: false,
       message: "Tukang ID and Job ID are required",

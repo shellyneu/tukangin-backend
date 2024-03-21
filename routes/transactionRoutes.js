@@ -9,7 +9,7 @@ const {
 
 // Routes
 router.post(
-  "/:tukangId/:jobId",
+  "/:jobId",
   authentication,
   uploadPhoto("bukti").single("bukti"),
   createTransaction

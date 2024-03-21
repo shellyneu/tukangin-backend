@@ -21,10 +21,7 @@ const TransactionModel = (sequelize, DataTypes) => {
     tukangId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: Tukang,
-        key: "id",
-      },
+      defaultValue: 1,
     },
     jobId: {
       type: DataTypes.INTEGER,
@@ -66,7 +63,6 @@ const TransactionModel = (sequelize, DataTypes) => {
   });
 
   Transaction.belongsTo(User, { foreignKey: "userId" });
-  Transaction.belongsTo(Tukang, { foreignKey: "tukangId" });
   Transaction.belongsTo(PostJob, { foreignKey: "jobId" });
 
   Transaction.beforeCreate(async (transactionInstance, options) => {
