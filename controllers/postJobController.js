@@ -1,7 +1,7 @@
 const models = require("../models");
 const asyncHandler = require("express-async-handler");
 
-const validCategories = ["pengecatan", "saluran", "pasang", "listrik"];
+const validCategories = ["pengecat", "saluran", "pasang", "lainnya"];
 const validStatus = ["Rekrut", "Proses", "Selesai"];
 
 // Create a new post job
