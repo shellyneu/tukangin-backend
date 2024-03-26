@@ -14,6 +14,6 @@ router.post(
   uploadPhoto("bukti").single("bukti"),
   createTransaction
 );
-router.get("/", authentication, getTransactions);
+router.get("/", getTransactions);
 
 module.exports = router;

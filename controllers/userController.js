@@ -3,11 +3,9 @@ const models = require("../models");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
-const { where } = require("sequelize");
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { nama, noHP, email, password, confirmPassword, ktp, statusValidate } =
-    req.body;
+  const { nama, noHP, email, password, confirmPassword, ktp } = req.body;
 
   if (!noHP) {
     res.status(400).json({

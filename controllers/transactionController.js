@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const models = require("../models");
 const asyncHandler = require("express-async-handler");
 

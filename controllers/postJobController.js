@@ -18,7 +18,6 @@ const createPostJob = asyncHandler(async (req, res) => {
     statusJob,
     tukang,
     applyTukang,
-    photo,
   } = req.body;
   const PhotoName = req.file ? req.file.filename : null;
 
